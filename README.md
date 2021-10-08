@@ -1134,8 +1134,505 @@ Hasilnya:
 1,2,3,4,5,6,7,8,9,10,
 ```
 
+perhatikan kodisi until yang salah [ $i -gt 10], dimana nilai awal i=1 dan akan berhenti apabila nilai i = 11 (bernilai benar) 11 -gt 10. 
+
+**statement select**
+
+select berguna untuk pembuatan layout berbentuk menu pilihan, anda lihat contoh script pembuatan menu diatas kita hanya melakukannya dengan echo secara satu persatu, dengan select akan terlihat lebih efisien.
+
+syntax: 
+
+```bash
+select varname in (&ltitem list>); do perintah; done
+```
+
+sewaktu dijalankan bash akan menampilkan daftar menu yang diambil dari item list, serta akan menampilkan prompt yang menunggu masukan dari keyboard, masukan tersebut oleh bash disimpan di variabel builtin REPLY, apabila daftar item list tidak dituliskan maka bash akan mengambil item list dari parameter posisi sewaktu script dijalankan. lebih jelasnya 
+
+lihat contoh berikut: 
+
+```bash
+#!/bin/bash
+#menu1
+
+clear
+select menu
+do
+  echo "Anda memilih $REPLY yaitu $menu"
+done
+```
+
+Hasilnya:
+
+```bash
+layout:
+[fajar@linux$]./menu1 Slackware Redhat Mandrake
+1) Slackware
+2) Redhat
+3) Mandrake
+ #? 1
+Anda memilih 1 yaitu Slackware
+```
+
+karena item list tidak disertakan dalam script, maka sewaktu script dijalankan kita menyertakan item list sebagai parameter posisi, coba gunakan statement select pada program kedai diatas. 
+
+```bash
+#!/bin/bash
+#kedai
+
+lagi='y'
+while  [ $lagi == 'y' ] || [ $lagi == 'Y' ];
+do
+   clear
+   select menu in "Bakso" "Gado-Gado" "Exit";
+   case $REPLY in 
+        1) echo -n "Banyak mangkuk =";
+           read jum
+           let bayar=jum*1500;
+           ;;
+        2) echo -n "Banyak porsi =";
+           read jum
+           let bayar=jum*2000;
+           ;;
+        3) exit 0
+           ;;
+        *) echo "Sorry, tidak tersedia"
+           ;;
+  esac 
+do
+
+echo "Harga bayar = Rp. $bayar"
+echo "THX"
+echo 
+echo -n "Hitung lagi (y/t) :";
+read lagi; 
+
+    #untuk validasi input
+    while  [ $lagi != 'y' ] && [ $lagi != 'Y' ] && [ $lagi != 't' ] && [ $lagi != 'T' ];
+    do
+       echo "Ops, isi lagi dengan (y/Y/t/Y)";
+       echo -n "Hitung lagi (y/t) :";
+       read lagi;
+    done
+done
+```
+
+## Array
+adalah kumpulan variabel dengan tipe sejenis, dimana array ini merupakan feature Bash yang cukup indah :-) dan salah satu hal yang cukup penting dalam bahasa pemrograman, anda bisa membayangkan array ini sebagai tumpukan buku - buku dimeja belajar. lebih jelasnya sebaiknya lihat dulu contoh script berikut: 
+
+```bash
+#!/bin/bash
+#array1
+
+buah=(Melon,Apel,Durian);
+echo ${buah[*]};
+```
+
+Hasilnya:
+
+```bash
+[aikom@linux$]./array1.
+Melon,Apel,Durian
+```
+
+anda lihat bahwa membuat tipe array di Bash begitu mudah, secara otomatis array buah diciptakan dan string Melon menempati index pertama dari array buah, perlu diketahui bahwa array di Bash dimulai dari index 0, jadi array buah mempunyai struktur seperti berikut: 
+
+```bash
+buah[0] berisi Melon
+buah[1] berisi Apel
+buah[2] berisi Durian
+```
+
+0,1,2 adalah index array, berarti ada 3 elemen pada array buah, untuk menampilkan isi semua elemen array gunakan perintah subtitusi seperti pada contoh diatas, dengan index berisi "*" atau "@". dengan adanya index array tentunya kita dapat mengisi array perindexnya dan menampilkan isi array sesuai dengan index yang diinginkan. anda lihat contoh berikut: 
+
+```bash
+#!/bin/bash
+#array2
+
+bulan[0]=31
+bulan[1]=28
+bulan[2]=31
+bulan[3]=30
+bulan[4]=31
+bulan[5]=30
+bulan[6]=31
+bulan[7]=31
+bulan[8]=30
+bulan[9]=31
+bulan[10]=30
+bulan[11]=31
+echo "Banyak hari dalam bulan Oktober adalah ${bulan[10]} hari"
+```
+
+Hasilnya:
+
+```bash
+[fajar@linux$]./array2
+Banyak hari dalam bulan Oktober adalah 30 hari
+```
+
+sebenarnya kita dapat mendeklarasikan array secara eksplisit menggunakan statement declare
+
+contohnya: 
+
+```bash
+declare -a myarray
+```
+
+mendeklarasikan variabel myarray sebagai array dengan opsi -a, kemudian anda sudah dapat memberinya nilai baik untuk semua elemen atau hanya elemen tertentu saja dengan perulangan yang telah kita pelajari pengisian elemen array dapat lebih dipermudah, lihat contoh : 
+
+```bash
+#!/bin/bash
+#array3
+
+#deklarasikan variabel array
+declare -a angka    
+
+#clear
+i=0;
+while [ $i -le 4 ];
+do
+let isi=$i*2;
+angka[$i]=$isi;
+let i=$i+1;
+done
+
+#tampilkan semua elemen array
+#dengan indexnya berisi "*" atau "@"
+echo ${angka[*]};  
+
+#destroy array angka (memory yang dipakai dibebaskan kembali)
+unset angka
+```
+
+Hasilnya:
+
+```bash
+[aikom@linux$]./array3
+0 2 4 6 8
+```
+
+## Subrutin atau Fungsi
+
+merupakan bagian script atau program yang berisi kumpulan beberapa statement yang melaksanakan tugas tertentu. dengan subrutin kode script kita tentunya lebih sederhana dan terstruktur, karena sekali fungsi telah dibuat dan berhasil maka akan dapat digunakan kapan saja kita inginkan. beberapa hal mengenai fungsi ini adalah:
+
+- Memungkinkan kita menyusun kode script ke dalam bentuk modul-modul kecil yang lebih efisien dengan tugasnya masing-masing.
+- Mencegah penulisan kode yang berulang - ulang.
+
+untuk membuat subrutin shell telah menyediakan keyword function seperti pada bahasa C, akan tetapi ini bersifat optional (artinya boleh digunakan boleh tidak).
+
+syntax: 
+
+```bash
+function nama_fungsi() { perintah; }
+```
+
+nama_fungsi adalah pengenal (identifier) yang aturan penamaannya sama seperti pemberian nama variabel, setelah fungsi dideklarasikan atau dibuat anda dapat memaggilnya dengan menyebutkan nama fungsinya. lebih jelasnya lihat contoh script fungsi1 berikut: 
+
+```bash
+!/bin/bash
+
+function say_hello() {
+    echo "Hello, selamat pagi"
+}
+```
+
+```bash
+#panggil fungsi 
+say_hello;
+```
+
+```bash
+#panggil selamat pagi
+say_hello;
+```
+
+Hasilnya:
+
+```bash
+[fajar@linux$]./fungsi1
+Hello, selamat pagi
+ 
+Hello, selamat pagi
+```
+
+jika keyword function disertakan maka kita boleh tidak menggunakan tanda kurung (), tetapi jika keyword function tidak disertakan maka tanda kurung harus digunakan, lihat contoh berikut: 
+
+```bash
+#!/bin/bash 
+
+function say_hello{
+  echo "Hello,selamat pagi"
+}
+
+balas(){
+  echo "Baik-baik saja";
+  echo "Bagaimana dengan anda ?";
+}
 
 
+#panggil fungsi say_hello
+say_hello;
+
+#panggil fungsi balas
+balas;
+```
+
+Hasilnya: 
+
+```bash
+[aikom@linux$]./fungsi2
+Hello, apa khabar
+Baik-baik saja
+Bagaimana dengan anda ?
+```
+
+### Mengirim argumen sebagai parameter ke fungsi
+
+tentunya suatu fungsi lebih berdaya guna apabila dapat menerima argumen yang dikirim oleh pemanggilnya dan memproses argumen tsb didalam fungsinya, fungsi yang kita buat pada bash shell tentunya dapat melakukan hal tsb, apabila pada pemanggilan fungsi kita menyertakan argumen untuk diproses fungsi tsb, maka bash akan menyimpan argumen - argumen tsb pada parameter posisi 1,2,3,dst..., nah dengan memanfaatkan parameter posisi tsb tentunya kita dapat mengambil nilai yang dikirim. lebih jelasnya anda lihat contoh berikut: 
+
+```bash
+#!/bin/bash
+
+function hello{
+   if [ -z $1 ]; then
+      echo "Hello, apa khabar"
+   else
+      echo "Hello $1, apa khabar";
+   fi
+}
+
+#masukkan nama anda disini
+echo -n "Nama anda :";
+read nama
+
+#panggil fungsi dan kirim isi variabel nama ke fungsi untuk dicetak
+hello $nama;
+```
+
+Hasilnya:
+
+```bash
+[aikom@linux$]./fungsi3
+Nama anda : pinguin
+Hello pinguin, apa khabar
+```
+
+lihat fungsi hello, sebelum mencetak pesan kita melakukan pemeriksaan dengan if terhadap parameter posisi $1 apabila kosong maka pesan "Hello, apa khabar anda" yang akan ditampilkan, tetapi jika ada string yang kita input maka string tersebut akan dicetak di dalam blok else pada fungsi. argumen pertama diteruskan ke variabel 1, argumen kedua pada variabel 2, dst.. jika argumen yang dikirim lebih dari satu. 
+
+### Cakupan Variabel
+
+secara default variabel - variabel yang digunakan dalam script adalah variabel bersifat global, maksud global adalah bahwa variabel tsb dikenal dan dapat diakses oleh semua fungsi dalam script, tetapi bash menyediakan keyword local yang berfungsi membatasi cakupan (scope) suatu variabel agar dikenal hanya oleh fungsi yang mendeklarasikannya.coba lihat contoh berikut: 
+
+```bash
+#!/bin/bash
+
+proses(){
+   echo "Isi variabel a=$a";
+}
+
+a=2;
+proses();
+proses $a
+```
+
+Hasilnya:
+
+```bash
+Isi variabel a=2
+Isi variabel a=2
+```
+
+coba anda tambahkan local a pada fungsi proses menjadi 
+
+```bash
+proses(){
+   local a;
+   echo -e "a didalam fungsi, a=$a";
+}
+
+a=10;
+proses()
+
+echo "a diluar fungsi, a=$a"
+proses $a
+```
+
+Hasilnya:
+
+```bash
+a didalam fungsi, a= 
+a diluar fungsi,  a=10
+a didalam fungsi  a=
+```
+
+nah jelas perbedaannya jika mendeklarasikan variabel memakai keyword local menyebabkan variabel tersebut hanya berlaku pada fungsi yang mendekalarasikannya. pada contoh dalam fungsi proses variabel a dideklarasikan sebagai variabel local dan tidak diberi nilai.
+
+Diakhir dokumentasi ini saya menyertakan contoh script sederhana untuk melakukan entry data-data KPLI (Kelompok Pencinta Linux Indonesia) dan menyimpannya ke sebuah file. perintah-perintah shell dan beberapa utility yang digunakan adalah: 
+
+- apa yang telah anda pelajari diatas
+- utility test, touch
+- operator redirection ">>" untuk menambah data
+- sleep, grep (global regular expression parser), cut, cat, | (pipa), sort dan more
+- tput untuk menempatkan cursor pada koordinat tertentu (baris kolom)
+
+sebagai latihan silahkan mengembangkan sendiri script dibawah ini: 
+
+```bash
+#!/bin/bash
+#------------------------------------------------------------------
+#(C) Moh.fajar Makassar 2001, contoh script buat para linuxer
+#file ini adalah public domain, silahkan mendistribusikan kembali
+#atau mengubahnya asalkan anda mengikuti aturan - aturan dari GPL
+#
+
+menu(){
+  clear  
+  tput cup 2 8;
+  echo "SIMPLE DATABASE KPLI"
+  tput cup 3 11; 
+  echo "1. Entry Data"
+  tput cup 4 11;
+  echo "2. Cari  Data"
+  tput cup 5 11;
+  echo "3. Cetak Data"
+  tput cup 6 11;
+  echo "4. Exit"
+  tput cup 7 9;
+  read -p "Pilihan anda [1-4] :" pil;
+  while [ -z $pil ] || [ $pil -lt 1 ] || [ $pil -gt 4 ];
+  do
+     tput cup 7 9 
+     read -p "Pilihan anda [1-4] :" pil;
+  done  
+}
+
+entry()
+{
+  tput cup 9 27 
+  echo "Enrty data"
+  tput cup 11 27
+  echo -n "Nama KPLI :";
+  read nama;
+         
+  while  [ -z $nama ] || grep  $nama $data -q -i;
+  do
+      tput cup 13 27
+      echo "Ops Tidak boleh kosong atau $nama sudah ada";
+      sleep 3 
+      clear
+      tput cup 11 27
+      echo -n "Nama KPLI :";
+      read nama;
+  done
+  
+  tput cup 12 27
+  echo -n "Kota      :";
+  read kota;
+  tput cup 13 27
+  echo -n "Alamat    :";
+  read alamat;
+  tput cup 14 27
+  echo -n "Email     :";
+  read email;
+  tput cup 16 27
+  echo "Rekam data ke file"
+  if !(echo $nama:$kota:$alamat:$email>>$data); then
+       echo "Ops, gagal merekam ke file"
+       exit 1;
+  fi
+  sleep 3;
+}
+
+cari(){
+  tput cup 9 27 
+  echo "Cari data per record"  
+  tput cup 11 27
+  echo -n "Nama KPLI   :";
+  read nama;
+  while [ -z $nama ]; 
+  do
+    tput cup 13 27
+    echo "Ops, nama tidak boleh kosong"
+    sleep 3;
+    tput cup 11 27
+    echo -n "Nama KPLI   :";
+    read nama;
+  done 
+
+  if found=`grep $nama $data -n -i`; then
+     tput cup 12 27 
+     echo -n "Kota        :"; 
+         echo "$found" | cut -d: -f3
+         tput cup 13 27 
+         echo -n "Alamat      :"; 
+         echo "$found" | cut -d: -f4
+     tput cup 14 27 
+         echo -n "Mail        :"; 
+         echo "$found" | cut -d: -f5
+         tput cup 16 27 
+         echo -n "Record ke- $found" | cut -d: -f1
+      else
+         tput cup 13 27 
+         echo "Ops, data tidak ditemukan";
+      fi
+}
+
+cetak()
+{
+  tput cup 12 27
+  echo "Tampilkan Data"
+  tput cup 13 27 
+  echo -n "1->Ascendig, 2->Descending :"
+  read mode
+  clear;
+  if [ -z $mode ] || [ $mode -eq 1 ]; then
+     cat $data | sort  | more -d
+  elif [ $mode -eq 2 ]; then
+     cat $data | sort -r | more -d
+  else 
+  cat $data | sort | more -d
+  fi  
+}
+
+#block utama
+
+  data="mydata" 
+
+  if !(test -e $data); then
+    if !(touch $data); then
+       echo "gagal buat file database"
+       exit 1
+    fi
+  fi
+
+  lagi='y'
+  while [ $lagi == 'y' ] || [ $lagi == 'Y' ]
+  do
+  menu;
+    case $pil in
+       1) entry
+          ;; 
+       2) cari;
+          ;;
+       3) cetak
+          ;;
+       4) clear;
+          exit 0;
+          ;;
+       *) 
+          echo "$pil, tidak ada dalam pilihan"
+          ;;
+    esac 
+
+  tput cup 18 27
+  echo -n "Ke Menu (y/t): ";
+  read lagi;
+  done       
+
+  clear       
+```
+
+tentunya kemampuan script ini dapat kita tambahkan dengan mudah sehingga mendekati program database sesungguhnya, utility seperti tr, paste, egrep, lpr, dll.. cukup baik dan membantu untuk digunakan. 
 
 
 
