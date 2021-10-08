@@ -687,12 +687,452 @@ Bagian ini merupakan ciri yang paling khas dari suatu bahasa pemrograman dimana 
 
 ### test dan operator
 
+test adalah utility sh shell yang berguna untuk memeriksa informasi tentang suatu file dan berguna untuk melakukan perbandingan suatu nilai baik string ataupun numerik 
+
+```bash
+syntaxnya: test ekspresi
+```
+proses kerja test yaitu dengan mengembalikan sebuah informasi status yang dapat bernilai 0 (benar) atau 1 (salah) dimana nilai status ini dapat dibaca pada variabel spesial $?. 
+
+```bash
+[aikom@linux$]test 5 -gt 3
+[aikom@linux$]echo $?
+0
+```
+
+pernyataan 5 -gt (lebih besar dari) 3 yang dievaluasi test menghasilkan 0 pada variabel status $? itu artinya pernyataan tersebut benar tetapi coba anda evaluasi dengan expresi berikut 
+
+```bash
+[aikom@linux$]test 3 -lt 1
+[aikom@linux$]echo $?
+1
+```
+
+status bernilai 1, berarti pernyataan salah.
+
+anda lihat simbol -gt dan -lt, itulah yang disebut sebagai operator, secara sederhana operator adalah karakter khusus (spesial) yang melakukan operasi terhadap sejumlah operand, misalkan 2+3, "+" adalah operator sedangkan 2 dan 3 adalah operandnya, pada contoh test tadi yang bertindak sebagai oparatornya adalah -lt dan -gt, sedangkan bilangan disebelah kiri dan kanannya adalah operand. cukup banyak operator yang disediakan bash antara lain: 
 
 
+### Operator untuk integer
 
+```bash
+Operator 	      Keterangan
+bil1 -eq bil2 	Mengembalikan Benar jika bil1 sama dengan bil2
+bil1 -ne bil2 	-||- Benar jika bil1 tidak sama dengan bil2
+bil1 -lt bil2 	-||- Benar jika bil1 lebih kecil dari bil2
+bil1 -le bil2 	-||- Benar jika bil1 lebih kecil atau sama dengan bil2
+bil1 -gt bil2 	-||- Benar jika bil1 lebih besar dari bil2
+bil1 -ge bil2 	-||- Benar jika bil1 lebih besar atau sama dengan bil2
+```
 
+### Operasi string
 
+```bash
+Operator 	Keterangan
+-z STRING 	Mengembalikan Benar jika panjang STRING adalah zero
+STRING1 == STRING2 	-||- Benar jika STRING1 sama dengan STRING2
+```
 
+### Operator file
+
+```bash
+Operator 	Keterangan
+-f FILE 	Mengembalikan Benar jika FILE ada dan merupakan file biasa
+-d FILE 	-||- Benar jika FILE ada dan meruapakan direktory
+```
+
+### Operator logika
+
+```bash
+ekspr1 -o ekspr2 	Benar jika jika salah satu ekspresi benar (or,||)
+ekspr1 -a ekspr2 	Benar jika ekspresi1 dan ekspresi2 benar (and,&&)
+! ekspresi 	      Mengembalikan Benar jika ekspresi tidak benar (not!)
+```
+
+untuk informasi lebih lengkap man bash atau info bash di prompt shell anda. 
+
+## Seleksi
+
+**if**
+
+Statement builtin if berfungsi untuk melakukan seleksi berdasarkan suatu kondisi tertentu
+
+syntax: 
+
+```bash
+if test-command1; 
+   then 
+      perintah1;
+elif test-command2;
+   then
+      perintah2;
+else
+      alternatif_perintah;
+fi
+```
+
+contoh script if1: 
+
+```bash
+#!/bin/bash
+#if1
+
+clear;
+if [ $# -lt 1 ]; 
+   then 
+     echo "Usage : $0 [arg1 arg2 ...]"
+     exit 1;
+fi
+
+echo "Nama script anda : $0";
+echo "Banyak argumen   : $#";
+echo "Argumennya adalah: $*";
+```
+
+Hasilnya:
+
+```bash
+[aikom@linux$]./if1
+ 
+Usage : ./if1 [arg1 arg2 ...]
+```
+
+statement dalam blok if...fi akan dieksekusi apabila kondisi if terpenuhi, dalam hal ini jika script if1 dijalankan tanpa argumen. kita tinggal membaca apakah variabel $# lebih kecil (less than) dari 1, jika ya maka eksekusi perintah di dalam blok if ..fi tsb. perintah exit 1 akan mengakhiri jalannya script, angka 1 pada exit adalah status yang menandakan terdapat kesalahan, status 0 berarti sukses, anda dapat melihat isi variabel $? yang menyimpan nilai status exit, tetapi jika anda memasukkan satu atau lebih argumen maka blok if...fi tidak akan dieksekusi, statement diluar blok if..filah yang akan dieksekusi. 
+
+contoh script if2: 
+
+```bash
+#!/bin/bash
+
+kunci="aikom";
+read -s -p "Password anda : " pass
+if [ $pass != $kunci ]
+then echo "Maaf, anda gagal";
+else echo "Sukses, anda layak dapat linux";
+fi
+```
+
+Hasilnya: 
+
+```bash
+[aikom@linux$]./if2
+Password anda : aikom
+Sukses, anda layak dapat linux
+[aikom@linux$]./if2
+Password anda : Aikom
+Maaf, anda gagal
+```
+
+klausa else akan dieksekusi jika if tidak terpenuhi, sebaliknya jika if terpenuhi maka else tidak akan dieksekusi
+
+contoh script if3: penyeleksian dengan kondisi majemuk 
+
+```bash
+#!/bin/bash 
+
+clear
+echo "MENU HARI INI";
+echo "-------------";
+echo "1. Bakso     ";
+echo "2. Gado-Gado ";
+echo "3. Exit      ";
+read -p "Pilihan anda [1-3] :" pil;
+
+if [ $pil -eq 1 ]; 
+then
+   echo "Banyak mangkuk =";
+   read jum
+  let bayar=jum*1500;  
+elif [ $pil -eq 2 ]; 
+then
+   echo "Banyak porsi =";
+   read jum
+   let bayar=jum*2000;
+elif [ $pil -eq 3 ]; 
+then
+   exit 0
+else
+   echo "Sorry, tidak tersedia"
+   exit 1
+fi
+
+echo "Harga bayar = Rp. $bayar"
+echo "THX"
+```
+
+Hasilnya:
+
+```bash
+[aikom@linux$]./if3
+MENU HARI INI
+-------------
+1. Bakso    
+2. Gado-Gado 
+3. Exit    
+Pilihan anda :2
+
+Banyak porsi = 2
+
+Harga bayar = Rp. 4000
+THX
+```
+
+**statement builtin case**
+
+seperti halnya if statement case digunakan untuk menyeleksi kondisi majemuk, dibanding if, pemakaian case terasa lebih efisien
+
+syntax: 
+
+```bash
+case WORD in [ [(] PATTERN [| PATTERN]...) COMMAND-LIST ;;]...
+esac
+```
+
+contoh script cs1 
+
+```bash
+#!/bin/bash
+
+clear
+echo -n "Masukkan nama binatang :";
+read binatang;
+
+case $binatang in
+    pinguin | ayam | burung ) echo "$binatang berkaki 2"
+                  exit
+                  ;;
+    onta | kuda | anjing ) echo "$binatang berkaki 4"
+                  exit
+                  ;;
+    *) echo "$binatang blom didaftarkan"
+                  exit
+                  ;;
+esac
+```
+
+Hasilnya:
+
+```bash
+[aikom@linux$]./cs1
+Masukkan nama binatang : pinguin
+pinguin berkaki 2
+```
+
+## Perulangan
+
+**statement for**
+
+syntax: 
+
+```bash
+for NAME [in WORDS ...]; do perintah; done
+```
+
+contoh script for1 
+
+```bash
+#!/bin/bash
+
+for angka in 1 2 3 4 5;
+do
+   echo "angka=$angka";
+done
+```
+
+Hasilnya:
+
+```bash
+[aikom@linux$]./for1
+angka=1
+angka=2
+angka=3
+angka=4
+angka=5
+```
+
+contoh script for2 berikut akan membaca argumen yang disertakan waktu script dijalankan
+
+```bash
+#!/bin/bash
+
+for var 
+do
+   echo $var
+done
+```
+
+Hasilnya:
+
+```bash
+[aikom@linux$]./for2 satu 2 tiga
+satu
+2
+tiga
+```
+
+atau variasi seperti berikut 
+
+```bash
+#!/bin/bash
+
+for var in `cat /etc/passwd`
+do
+   echo $var
+done
+```
+
+Hasilnya: hasil dari perintah cat terhadap file /etc/passwd disimpan ke var dan ditampilkan menggunakan echo $var ke layar, mendingan gunakan cat /etc/passwd saja biar efisien.
+
+**statement while**
+
+selama kondisi bernilai benar atau zero perintah dalam blok while akan diulang terus
+
+syntax: 
+
+```bash
+while KONDISI; do perintah; done;
+```
+
+contoh script wh1 mencetak bilangan ganjil antara 1-10 
+
+```bash
+#!/bin/bash
+
+i=1;
+while [ $i -le 10 ];
+do
+  echo "$i,";
+  let i=$i+2;
+done
+```
+
+Hasilnya: 
+
+```bash
+[aikom@linux$]./wh1
+1,3,5,7,9,
+```
+
+kondisi tidak terpenuhi pada saat nilai i=11 (9+2), sehingga perintah dalam blokwhile tidak dieksekusi lagi contoh script wh2 akan menghitung banyak bilangan genap dan ganjil yang ada. 
+
+```bash
+#!/bin/bash 
+
+i=0;
+bil_genap=0;
+bil_ganjil=0;
+
+echo -n "Batas loop :";
+read batas
+
+if [ -z $batas ] || [ $batas -lt 0 ]; then
+  echo "Ops, tidak boleh kosong atau Batas loop  harus >= 0";
+  exit 0;
+fi
+
+while [ $i -le $batas ]; 
+do
+    echo -n "$i,";
+    if [ `expr  $i % 2` -eq 0 ]; then 
+       let bil_genap=$bil_genap+1;
+    else
+       let bil_ganjil=$bil_ganjil+1;
+    fi
+    let i=$i+1;    #counter untuk mencapai batas
+done
+
+echo 
+echo "banyak bilangan genap  = $bil_genap";
+echo "banyak bilangan ganjil = $bil_ganjil";
+```
+
+Hasilnya:
+
+```bash
+[aikom@linux$]./wh2
+Batas loop : 10
+0,1,2,3,4,5,6,7,8,9,10,
+banyak bilangan genap  = 6
+banyak bilangan ganjil = 5
+```
+
+untuk mengetahui apakah nilai i berupa bilangan genap kita cukup menggunakan operasi matematika % (mod), jika nilai i dibagi 2 menghasilkan sisa 0 berarti i adalah bilangan genap (semua bilangan genap yang dibagi dengan 2 mempunyai sisa 0) maka pencacah (bil_genap) dinaikkan 1, selain itu i bilangan ganjil yang dicatat oleh pencacah bil_ganjilproses ini dilakukan terus selama nilai i lebih kecil atau samadengan nilai batas yang dimasukkan. script juga akan memeriksa dahulu nilai batas yang dimasukkan apabila kosong atau lebih kecil dari 0 maka proses segera berakhir.tentunya dengan statement while kita sudah dapat membuat perulangan pada script kedai diatas agar dapat digunakan terus-menerus selama operator masih ingin melakukan proses perhitungan. 
+
+lihat contoh berikut: 
+
+```bash
+#!/bin/bash
+#kedai
+
+lagi='y'
+while  [ $lagi == 'y' ] || [ $lagi == 'Y' ];
+do
+   clear
+   echo "MENU HARI INI";
+   echo "-------------";
+   echo "1. Bakso      ";
+   echo "2. Gado-Gado  ";
+   echo "3. Exit       ";
+   read -p "Pilihan anda [1-3] :" pil;
+
+if [ $pil -eq 1 ]; 
+then
+   echo -n "Banyak mangkuk =";
+   read jum
+   let bayar=jum*1500;
+elif [ $pil -eq 2 ];
+then
+   echo -n "Banyak porsi =";
+   read jum
+   let bayar=jum*2000;
+elif [ $pil -eq 3 ];
+then
+   exit 0
+else
+   echo "Sorry, tidak tersedia"
+   exit 1
+fi
+
+echo "Harga bayar = Rp. $bayar"
+echo "THX"
+echo 
+echo -n "Hitung lagi (y/t) :";
+read lagi; 
+
+    #untuk validasi input
+    while  [ $lagi != 'y' ] && [ $lagi != 'Y' ] && [ $lagi != 't' ] && [ $lagi != 'T' ];
+    do
+       echo "Ops, isi lagi dengan (y/Y/t/Y)";
+       echo -n "Hitung lagi (y/t) :";
+       read lagi;
+    done 
+
+done
+```
+
+proses pemilihan menu dan perhitungan biaya akan diulang terus selama anda memasukkan y/Y dan t/T untuk berhenti. dalam script terdapat validasi input menggunakan while, sehingga hanya y/Y/t/T saja yang dapat diterima soalnya saya belum mendapatkan fungsi yang lebih efisien
+
+**statement until**
+
+jika while akan mengulang selama kondisi benar, lain halnya dengan statement until yang akan mengulang selama kondisi salah. berikut contoh script ut menggunakan until
+
+```bash
+#!/bin/bash 
+
+i=1;
+until [ $i -gt 10 ];
+do
+  echo $i;
+  let i=$i+1
+done
+```
+
+Hasilnya:
+
+```bash
+[aikom@linux$]./ut
+1,2,3,4,5,6,7,8,9,10,
+```
 
 
 
