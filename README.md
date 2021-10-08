@@ -1480,7 +1480,7 @@ sebagai latihan silahkan mengembangkan sendiri script dibawah ini:
 ```bash
 #!/bin/bash
 #------------------------------------------------------------------
-#(C) Moh.fajar Makassar 2001, contoh script buat para linuxer
+#(C) Aikom Ternate 2021, contoh script buat para linuxer
 #file ini adalah public domain, silahkan mendistribusikan kembali
 #atau mengubahnya asalkan anda mengikuti aturan - aturan dari GPL
 #
@@ -1488,7 +1488,7 @@ sebagai latihan silahkan mengembangkan sendiri script dibawah ini:
 menu(){
   clear  
   tput cup 2 8;
-  echo "SIMPLE DATABASE KPLI"
+  echo "SIMPLE DATABASE Aikom"
   tput cup 3 11; 
   echo "1. Entry Data"
   tput cup 4 11;
@@ -1511,7 +1511,7 @@ entry()
   tput cup 9 27 
   echo "Enrty data"
   tput cup 11 27
-  echo -n "Nama KPLI :";
+  echo -n "Nama Aikom :";
   read nama;
          
   while  [ -z $nama ] || grep  $nama $data -q -i;
@@ -1521,7 +1521,7 @@ entry()
       sleep 3 
       clear
       tput cup 11 27
-      echo -n "Nama KPLI :";
+      echo -n "Nama Aikom :";
       read nama;
   done
   
@@ -1547,7 +1547,7 @@ cari(){
   tput cup 9 27 
   echo "Cari data per record"  
   tput cup 11 27
-  echo -n "Nama KPLI   :";
+  echo -n "Nama Aikom   :";
   read nama;
   while [ -z $nama ]; 
   do
@@ -1555,7 +1555,7 @@ cari(){
     echo "Ops, nama tidak boleh kosong"
     sleep 3;
     tput cup 11 27
-    echo -n "Nama KPLI   :";
+    echo -n "Nama Aikom  :";
     read nama;
   done 
 
