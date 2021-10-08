@@ -113,7 +113,7 @@ echo "Script shell aikom di linux"
 ```
 
 ```bash
-[fajar@linux$]echo "Script shell aikom di linux"
+[aikom@linux$]echo "Script shell aikom di linux"
 Script shell aikom di linux
 ```
 
@@ -219,7 +219,7 @@ simpan dahulu isi **PS1** asli system anda, sehingga nanti dapat dengan mudah di
 sekarang masukkan string yang diinginkan pada variabel **PS1**
 
 ```bash
-[fajar@linux$]PS1="Hi aikom ini Promptku!"
+[aikom@linux$]PS1="Hi aikom ini Promptku!"
 Hi aikom ini Promptku!PS2="Lengkapi dong ? "
 ```
 
@@ -265,7 +265,7 @@ echo $1 adalah salah satu $2 populer di $3
 Hasilnya 
 
 ```bash
-[fajar@linux$]./argumen1 bash shell linux
+[aikom@linux$]./argumen1 bash shell linux
 bash adalah salah satu shell populer di linux
 ```
 
@@ -284,7 +284,7 @@ echo "Argumennya adalah: $*";
 Hasilnya: 
 
 ```bash
-[fajar@linux$]./argumen 1 2 3 empat
+[aikom@linux$]./argumen 1 2 3 empat
 Nama script anda  : ./argumen
 Banyak argumen    : 4
 Argumennya adalah : 1 2 3 empat
