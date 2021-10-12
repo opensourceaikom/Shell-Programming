@@ -1266,7 +1266,7 @@ echo "Banyak hari dalam bulan Oktober adalah ${bulan[10]} hari"
 Hasilnya:
 
 ```bash
-[fajar@linux$]./array2
+[aikom@linux$]./array2
 Banyak hari dalam bulan Oktober adalah 30 hari
 ```
 
@@ -1349,7 +1349,7 @@ say_hello;
 Hasilnya:
 
 ```bash
-[fajar@linux$]./fungsi1
+[aikom@linux$]./fungsi1
 Hello, selamat pagi
  
 Hello, selamat pagi
