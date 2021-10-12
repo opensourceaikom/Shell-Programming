@@ -1165,7 +1165,7 @@ Hasilnya:
 
 ```bash
 layout:
-[fajar@linux$]./menu1 Slackware Redhat Mandrake
+[aikom@linux$]./menu1 Slackware Redhat Mandrake
 1) Slackware
 2) Redhat
 3) Mandrake
